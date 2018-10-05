@@ -8,6 +8,7 @@
 #include "ztKdTree.h"
 #include "ztGpuKnn.h"
 #include <omp.h>
+#include <string.h>
 
 using namespace std;
 
@@ -16,7 +17,35 @@ int testGpuKnn();
 
 int main()
 {
-	testGpuKnn();
+//	testKnn();
+
+	double sum = 0;
+
+// 	clock_t t = clock();
+// 
+// #pragma omp parallel for num_threads(omp_get_num_procs()), reduction(+:sum)
+// 	for (int j = 0; j < 10000000; j++)
+// 	{
+// 		sum += j;
+// 
+// 		/*printf("\n%d\n", sum);*/
+// 	}
+// 
+// 	printf("\tcost time of computing: %.3f\n", (clock() - t) / 1000.0);
+
+	bool *test = new bool[8];
+
+	memset(test, 1, 8 * sizeof(bool));
+
+	for (int i = 0; i < 8; i++)
+	{
+		if (test[i])
+		{
+			printf("%d\n", i);
+		}
+	}
+
+	delete[] test;
 
 	return 0;
 }
@@ -87,40 +116,6 @@ int testKnn()
 			return 1;
 		}
 
-// 		int snode = 2262;
-// 		do
-// 		{
-// 			int pnt = kdt.tree[1][snode];
-// 			char lr;
-// 			int bn = 0;
-// 
-// 			if (kdt.tree[2][pnt] == snode)
-// 			{
-// 				lr = 'r';
-// 				bn = kdt.tree[3][pnt];
-// 			}
-// 			else
-// 			{
-// 				{
-// 					lr = 'l';
-// 					bn = kdt.tree[2][pnt];
-// 				}
-// 			}
-// 
-// 			double dx, dy, dz;
-// 			dx = kdt.data[0][snode] - pts[100 * 3 + 0];
-// 			dy = kdt.data[1][snode] - pts[100 * 3 + 1];
-// 			dz = kdt.data[2][snode] - pts[100 * 3 + 2];
-// 
-// 			fprintf_s(fp, "%6d\t%d\t%c\t%d\t%7.3f\t%7.3f\t%7.3f\t%7.3f\t%7.3f\t%7.3f\t%7.3f\n",
-// 				snode, kdt.tree[0][pnt], lr, bn, 
-// 				kdt.data[0][snode], kdt.data[1][snode], kdt.data[2][snode],
-// 				dx,
-// 				dy,
-// 				dz, sqrt(dx * dx + dy * dy + dz * dz));
-// 
-// 			snode = pnt;	// Ë÷Òý¸¸½Úµã
-// 		} while (snode != 0);
 		printf("number of core = %d\n", omp_get_num_procs());
 #pragma omp parallel for num_threads(omp_get_num_procs()/* / 2*/)
 		for (int i = 0; i < n; i += 1)
@@ -131,7 +126,8 @@ int testKnn()
 			/*int nst = kdt.findNearest(sPt);*/
 
 			int knn[50];
-			kdt.findKNearestsNTP(sPt, 50, knn);
+			float dist[50];
+			kdt.findKNearestsNTP(sPt, 50, knn, dist);
 
 			/*fprintf_s(fp, "%-6d\t%-6d\n", i, nst);*/
 // 			fprintf_s(fp, "%d\n", i);
@@ -158,7 +154,7 @@ int testKnn()
 
 int testGpuKnn()
 {
-	std::string inFile("D:\\20180419_R1000_ariborne_test_mta\\180419_024813_0.las");
+/*	std::string inFile("D:\\20180419_R1000_ariborne_test_mta\\180419_024813_0.las");
 
 	std::ifstream ifs(inFile, std::ios::in | std::ios::binary);
 	if (!ifs.is_open())
@@ -182,7 +178,7 @@ int testGpuKnn()
 
 	unsigned int pointCount = 0;
 
-	for (int j = 0; j < 1/*m*/; j++)
+	for (int j = 0; j < 1; j++)
 	{
 		clock_t start = clock();
 
@@ -278,6 +274,6 @@ int testGpuKnn()
 
 		delete[] pts;
 	}
-
+	//*/
 	return 0;
 }

@@ -162,10 +162,12 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClInclude Include="ztGpuKnn.h" />
     <ClInclude Include="ztKdTree.h" />
+    <ClInclude Include="ztStatisticFilterNoisePoint.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ztKdTree.cpp" />
+    <ClCompile Include="ztStatisticFilterNoisePoint.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

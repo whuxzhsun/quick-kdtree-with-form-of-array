@@ -23,8 +23,10 @@ namespace zt
 		int findNearest(double *p);
 
 		// 查找最近的k个点
-		int findKNearestsSTL(float *p, int k, int *res);	// 使用stl堆栈
-		int findKNearestsNTP(float *p, int k, int *res);	// 使用自编写堆栈 none third party
+		// 使用stl堆栈
+		int findKNearestsSTL(float *p, int k, int *res);
+		// 使用自编写堆栈 none third party, 比stl快5倍左右
+		int findKNearestsNTP(float *p, int k, int *res, float *dit);
 		int findKNearests(double *p, int k, int *res);
 
 		// 查找给定范围内的点
@@ -34,10 +36,10 @@ namespace zt
 		// gpu设备是否可用
 		bool isGpuEnable;
 
-		// gpu查找最近的k个点
-		int gpuInit(int nn);
-		int gpuFindKNearests(float *p, int k, int *res);
-		int gpuFindKNearests(double *p, int k, int *res);
+		//// gpu查找最近的k个点
+		//int gpuInit(int nn);
+		//int gpuFindKNearests(float *p, int k, int *res);
+		//int gpuFindKNearests(double *p, int k, int *res);
 
 		int outKdTree(const char *outPath);
 

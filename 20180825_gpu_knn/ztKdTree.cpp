@@ -2,7 +2,7 @@
 #include <stack>
 #include <queue>
 #include <vector>
-#include "ztGpuKnn.h"
+/*#include "ztGpuKnn.h"*/
 
 namespace zt
 {
@@ -392,7 +392,7 @@ namespace zt
 		return 0;
 	}
 
-	int ZtKDTree::findKNearestsNTP(float *p, int k, int *res)
+	int ZtKDTree::findKNearestsNTP(float *p, int k, int *res, float *dit)
 	{
 		// 数组形式的最大堆
 		int *kNeighbors = new int[k];
@@ -567,11 +567,17 @@ namespace zt
 			res = new int[k];
 		}
 
+		if (!dit)
+		{
+			dit = new float[k];
+		}
+
 		int i = k;
 		while (i != 0)
 		{	
 			i--;
 			res[i] = kNeighbors[i];
+			dit[i] = kNDistance[i];
 		}
 
 		delete[] kNeighbors;
@@ -681,7 +687,7 @@ namespace zt
 
 		return 0;
 	}
-
+/*
 	int ZtKDTree::gpuInit(int nn)
 	{
 		if (getCudaDeviceCount() > 0)
@@ -729,7 +735,7 @@ namespace zt
 
 		return 0;
 	}
-
+//*/
 	/*	
 	*	建树功能函数
 	*/
