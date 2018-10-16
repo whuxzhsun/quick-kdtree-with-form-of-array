@@ -138,11 +138,15 @@ int ZtStatisticFilterNoisePoint::applyFilter_2(int n, float *pts, bool *res)
 		count[i] = 0;
 	}
 
+	int *sindice = new int[n];
+
 	int c = 0, r = 0;
 	for (int i = 0; i < n; i++)
 	{
 		c = int((pts[i * 3 + 0] - lx) / hstep) + int((pts[i * 3 + 1] - ly) / vstep) * nhb;
 		count[c]++;
+
+		sindice[i] = c;
 	}
 
 	// ·ÖÅäË÷ÒýÄÚ´æ
@@ -160,7 +164,8 @@ int ZtStatisticFilterNoisePoint::applyFilter_2(int n, float *pts, bool *res)
 
 	for (int i = 0; i < n; i++)
 	{
-		c = int((pts[i * 3 + 0] - lx) / hstep) + int((pts[i * 3 + 1] - ly) / vstep) * nhb;
+//		c = int((pts[i * 3 + 0] - lx) / hstep) + int((pts[i * 3 + 1] - ly) / vstep) * nhb;
+		c = sindice[i];
 		indices[c][count[c]++] = i;
 	}
 
@@ -196,6 +201,7 @@ int ZtStatisticFilterNoisePoint::applyFilter_2(int n, float *pts, bool *res)
 		delete[] result;
 	}
 
+	delete[] sindice;
 	delete[] count;
 	for (int i = nhb * nvb - 1; i >= 0; i--)
 	{
