@@ -19,8 +19,8 @@ int testFilter();
 
 int main()
 {
-	//	testKnn();
-	testFilter();
+	testKnn();
+//	testFilter();
 
 	//	double sum = 0;
 
@@ -56,7 +56,7 @@ int main()
 int testKnn()
 {
 	printf("Test CPU:\n");
-	std::string inFile("D:\\20180419_R1000_ariborne_test_mta\\180419_024813_0.las");
+	std::string inFile("D:\\20180828_R1000_sanding\\las\\180828_022843_0.las");
 
 	std::ifstream ifs(inFile, std::ios::in | std::ios::binary);
 	if (!ifs.is_open())
@@ -71,7 +71,7 @@ int testKnn()
 
 	liblas::Point inPt(&inHeader);
 
-	int m = inHeader.GetPointRecordsCount() / 1000000 + 1;
+	int m = inHeader.GetPointRecordsCount() / 10000000/* + 1*/;
 	int n = inHeader.GetPointRecordsCount() / m;
 	n = (n / ALLTHREADS) * ALLTHREADS;
 	printf("number of points: %d\n", n);
@@ -102,6 +102,7 @@ int testKnn()
 
 		zt::ZtKDTree kdt;
 		kdt.setSize(3, n);
+		printf_s("\tnumber of points in kdtree: %d\n", n);
 		kdt.setData(pts);
 		kdt.buildTree();
 
@@ -119,32 +120,50 @@ int testKnn()
 			return 1;
 		}
 
-		printf("number of core = %d\n", omp_get_num_procs());
-#pragma omp parallel for num_threads(omp_get_num_procs()/* / 2*/)
-		for (int i = 0; i < n; i += 1)
+		float sPt[3] = {
+			-inHeader.GetOffsetX() + 458127.4,
+			-inHeader.GetOffsetY() + 4403518.666,
+			-inHeader.GetOffsetZ() + 23.217
+		};
+
+		std::vector<int> knn;
+		int nn = kdt.findNearestRange(sPt, 1.0, knn);
+
+		printf("\tnumber of searched point %d\n", nn);
+		for (int k = 0; k < nn; k++)
 		{
-			float sPt[3] = { pts[i * 3 + 0],
-				pts[i * 3 + 1],
-				pts[i * 3 + 2] };
-			/*int nst = kdt.findNearest(sPt);*/
-
-			int knn[50];
-			float dist[50];
-			kdt.findKNearestsNTP(sPt, 50, knn, dist);
-
-			/*fprintf_s(fp, "%-6d\t%-6d\n", i, nst);*/
-			// 			fprintf_s(fp, "%d\n", i);
-			// 			for (int k = 0; k < 10; k++)
-			// 			{
-			// 				double dx, dy, dz;
-			// 				dx = sPt[0] - pts[knn[k] * 3 + 0];
-			// 				dy = sPt[1] - pts[knn[k] * 3 + 1];
-			// 				dz = sPt[2] - pts[knn[k] * 3 + 2];
-			// 				fprintf_s(fp, "%-6d\t%5.3f\t", knn[k], 
-			// 					sqrt(dx * dx + dy * dy + dz * dz));
-			// 			}
-			// 			fprintf_s(fp, "\n");
+			fprintf_s(fp, "%.3lf\t%.3lf\t%.3lf\n",
+				pts[knn[k] * 3 + 0] + inHeader.GetOffsetX(),
+				pts[knn[k] * 3 + 1] + inHeader.GetOffsetY(),
+				pts[knn[k] * 3 + 2] + inHeader.GetOffsetZ());
 		}
+
+// 		printf("number of core = %d\n", omp_get_num_procs());
+// #pragma omp parallel for num_threads(omp_get_num_procs()/* / 2*/)
+// 		for (int i = 0; i < n; i += 1)
+// 		{
+// 			float sPt[3] = { pts[i * 3 + 0],
+// 				pts[i * 3 + 1],
+// 				pts[i * 3 + 2] };
+// 			/*int nst = kdt.findNearest(sPt);*/
+// 
+// 			int knn[50];
+// 			float dist[50];
+// 			kdt.findKNearestsNTP(sPt, 50, knn, dist);
+// 
+// 			/*fprintf_s(fp, "%-6d\t%-6d\n", i, nst);*/
+// 			// 			fprintf_s(fp, "%d\n", i);
+// 			// 			for (int k = 0; k < 10; k++)
+// 			// 			{
+// 			// 				double dx, dy, dz;
+// 			// 				dx = sPt[0] - pts[knn[k] * 3 + 0];
+// 			// 				dy = sPt[1] - pts[knn[k] * 3 + 1];
+// 			// 				dz = sPt[2] - pts[knn[k] * 3 + 2];
+// 			// 				fprintf_s(fp, "%-6d\t%5.3f\t", knn[k], 
+// 			// 					sqrt(dx * dx + dy * dy + dz * dz));
+// 			// 			}
+// 			// 			fprintf_s(fp, "\n");
+// 		}
 		fclose(fp);
 
 		printf("\tcost time of knn: %.3f\n", (clock() - start) / 1000.0);

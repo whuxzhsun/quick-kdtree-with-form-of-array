@@ -15,6 +15,8 @@
 #ifndef ZTKDTREE_H
 #define ZTKDTREE_H
 
+#include <vector>
+
 namespace zt
 {
 #define SAMPLE_MEAN 1024
@@ -44,8 +46,8 @@ namespace zt
 		int findKNearests(double *p, int k, int *res);
 
 		// 查找给定范围内的点
-		int findNearestRange(float *p, float range, int *res);
-		int findNearestRange(double *p, float range, int *res);
+		int findNearestRange(float *p, float range, std::vector<int> &res);
+		int findNearestRange(double *p, float range, std::vector<int> &res);
 
 		// gpu设备是否可用
 		bool isGpuEnable;

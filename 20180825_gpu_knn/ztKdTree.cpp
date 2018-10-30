@@ -600,7 +600,7 @@ namespace zt
 		return 0;
 	}
 
-	int ZtKDTree::findNearestRange(float *p, float range, int *res)
+	int ZtKDTree::findNearestRange(float *p, float range, std::vector<int> &res)
 	{
 		std::queue<NearestNode> kNeighbors;
 		std::stack<int> paths;
@@ -659,22 +659,20 @@ namespace zt
 			}
 		}
 
-		if (!res)
-		{
-			res = new int[kNeighbors.size()];
-		}
+		res.reserve(kNeighbors.size());
 
 		int i = kNeighbors.size();
+		int n = i;
 		while (!kNeighbors.empty())
 		{
-			res[--i] = kNeighbors.front().node;
+			res.push_back(kNeighbors.front().node);
 			kNeighbors.pop();
 		}
 
-		return 0;
+		return n;
 	}
 
-	int ZtKDTree::findNearestRange(double *p, float range, int *res)
+	int ZtKDTree::findNearestRange(double *p, float range, std::vector<int> &res)
 	{
 		float *pf = new float[nDimension];
 
@@ -683,9 +681,7 @@ namespace zt
 			pf[i] = p[i] - offset[i];
 		}
 
-		findNearestRange(pf, range, res);
-
-		return 0;
+		return findNearestRange(pf, range, res);
 	}
 /*
 	int ZtKDTree::gpuInit(int nn)
