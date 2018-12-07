@@ -400,7 +400,7 @@ namespace zt
 		int _currentNNode = 0;
 
 		// 数组形式的路径堆栈
-		int paths[64];
+		int paths[256];
 		int _currentPath = 0;
 
 		// 记录查找路径
@@ -419,6 +419,11 @@ namespace zt
 		float distance = 0;
 		while (_currentPath > 0)
 		{
+			if (_currentPath > 255)
+			{
+				return 1;
+			}
+
 			node = paths[_currentPath-- - 1];
 
 			distance = computeDistance(p, node);
@@ -560,6 +565,11 @@ namespace zt
 
 				parent = son;
 			}
+		}
+
+		if (_currentNNode < k)
+		{
+			return 1;
 		}
 
 		if (!res)
@@ -742,7 +752,7 @@ namespace zt
 		float *var = new float[nDimension];
 		float *mean = new float[nDimension];
 
-		int cnt = std::min((int)SAMPLE_MEAN, sz);/* cnt = sz;*/
+		int cnt = sz/*std::min((int)SAMPLE_MEAN, sz)*/;/* cnt = sz;*/
 		double rt = 1.0 / cnt;
 
 		for (int i = 0; i < nDimension; i++)
@@ -750,14 +760,14 @@ namespace zt
 			double sum1 = 0, sum2 = 0;
 			for (int j = 0; j < cnt; j++)
 			{
-				sum1 += rt * data[i][ids[j]] * data[i][ids[j]];
-				sum2 += rt * data[i][ids[j]];
+				sum1 += data[i][ids[j]] * data[i][ids[j]];
+				sum2 += data[i][ids[j]];
 			}
-			var[i] = sum1 - sum2 * sum2;
-			mean[i] = sum2;
+			var[i] = rt * sum1 - rt * sum2 * rt * sum2;
+			mean[i] = rt * sum2;
 		}
 
-		double max = 0;
+		double max = -9999999;
 
 		for (int i = 0; i < nDimension; i++)
 		{

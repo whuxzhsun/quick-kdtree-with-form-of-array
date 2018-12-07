@@ -13,14 +13,25 @@
 
 using namespace std;
 
+struct LasFormat3Point
+{
+	char scanAng;
+	unsigned char c;
+	unsigned short id;
+	unsigned short scandir;
+	int r, g, b, i;
+	double x, y, z, t;
+};
+
+
 int testKnn();
 int testGpuKnn();
 int testFilter();
 
 int main()
 {
-	testKnn();
-//	testFilter();
+//	testKnn();
+	testFilter();
 
 	//	double sum = 0;
 
@@ -56,7 +67,7 @@ int main()
 int testKnn()
 {
 	printf("Test CPU:\n");
-	std::string inFile("D:\\20180828_R1000_sanding\\las\\180828_022843_0.las");
+	std::string inFile("D:\\20180828_R1000_sanding\\las\\180828_022843_3.las");
 
 	std::ifstream ifs(inFile, std::ios::in | std::ios::binary);
 	if (!ifs.is_open())
@@ -71,14 +82,14 @@ int testKnn()
 
 	liblas::Point inPt(&inHeader);
 
-	int m = inHeader.GetPointRecordsCount() / 10000000/* + 1*/;
+	int m = inHeader.GetPointRecordsCount() / 1000000 + 1;
 	int n = inHeader.GetPointRecordsCount() / m;
 	n = (n / ALLTHREADS) * ALLTHREADS;
 	printf("number of points: %d\n", n);
 
 	unsigned int pointCount = 0;
 
-	for (int j = 0; j < 1/*m*/; j++)
+	for (int j = 0; j < m; j++)
 	{
 		clock_t start = clock();
 
@@ -302,8 +313,8 @@ int testGpuKnn()
 
 int testFilter()
 {
-	std::string inFile("D:\\20180419_R1000_ariborne_test_mta\\180419_024813_0.las");
-	std::string outFile("D:\\20180419_R1000_ariborne_test_mta\\180419_024813_0_Filter.las");
+	std::string inFile("D:\\20180828_R1000_sanding\\las\\180828_022843_3.las");
+	std::string outFile("D:\\20180828_R1000_sanding\\test\\180828_022843_3_ft.las");
 
 	std::ifstream ifs(inFile, std::ios::in | std::ios::binary);
 	if (!ifs.is_open())
@@ -351,18 +362,41 @@ int testFilter()
 		float *pts = new float[n * 3];
 		bool *res = new bool[n];
 
-		std::vector<liblas::Point> vpts;
-		vpts.reserve(n);
+// 		std::vector<liblas::Point> vpts;
+// 		vpts.reserve(n);
 
+		std::vector<LasFormat3Point> srcPts;
+		srcPts.reserve(n);
+
+		LasFormat3Point lf3p;
 		for (int k = 0; k < n; k++)
 		{
 			reader.ReadNextPoint();
+
 			inPt = reader.GetPoint();
-			vpts.push_back(inPt);
+			lf3p.x = inPt[0];
+			lf3p.y = inPt[1];
+			lf3p.z = inPt[2];
+			lf3p.r = inPt.GetColor().GetRed();
+			lf3p.g = inPt.GetColor().GetGreen();
+			lf3p.b = inPt.GetColor().GetBlue();
+			lf3p.i = inPt.GetIntensity();
+			lf3p.t = inPt.GetTime();
+			lf3p.c = inPt.GetClassification().GetClass();
+			lf3p.id = inPt.GetPointSourceID();
+			lf3p.scanAng = inPt.GetScanAngleRank();
+			lf3p.scandir = inPt.GetScanDirection();
+
+			srcPts.push_back(lf3p);
 
 			pts[k * 3 + 0] = float(inPt.GetX() - inHeader.GetOffsetX());
 			pts[k * 3 + 1] = float(inPt.GetY() - inHeader.GetOffsetY());
 			pts[k * 3 + 2] = float(inPt.GetZ() - inHeader.GetOffsetZ());
+		}
+
+		if (j == 0)
+		{
+			continue;
 		}
 
 		clock_t end = clock();
@@ -397,11 +431,16 @@ int testFilter()
 
 			/*outPt = vpts[i];*/
 
-			outPt.SetX(vpts[i].GetX());
-			outPt.SetY(vpts[i].GetY());
-			outPt.SetZ(vpts[i].GetZ());
-
-			outPt.SetIntensity(vpts[i].GetIntensity());
+			outPt.SetX(srcPts[i].x);
+			outPt.SetY(srcPts[i].y);
+			outPt.SetZ(srcPts[i].z);
+			outPt.SetColor(liblas::Color(srcPts[i].r, srcPts[i].g, srcPts[i].b));
+			outPt.SetIntensity(srcPts[i].i);
+			outPt.SetTime(srcPts[i].t);
+			outPt.SetClassification(srcPts[i].c);
+			outPt.SetPointSourceID(srcPts[i].id);
+			outPt.SetScanAngleRank(srcPts[i].scanAng);
+			outPt.SetScanDirection(srcPts[i].scandir);
 
 			writer.WritePoint(outPt);
 		}		

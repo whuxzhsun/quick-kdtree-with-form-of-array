@@ -27,7 +27,7 @@ int ZtStatisticFilterNoisePoint::setParameter(int mean_k, float std_mul)
 
 int ZtStatisticFilterNoisePoint::applyFilter(int n, float *pts, bool *res)
 {
-	if (!pts || !res || n < 1)
+	if (!pts || !res || n < mk)
 	{
 		printf("Can't process null pointer!\n");
 		return 1;
@@ -41,6 +41,8 @@ int ZtStatisticFilterNoisePoint::applyFilter(int n, float *pts, bool *res)
 	ztkdt.setData(pts);
 	ztkdt.buildTree();
 
+/*	ztkdt.outKdTree("debug.txt");*/
+
 
 	// 第二步：查找临近点，计算距离均值
 
@@ -48,13 +50,19 @@ int ZtStatisticFilterNoisePoint::applyFilter(int n, float *pts, bool *res)
 
 	float *distances = new float[n];	// 存储每一个点的平均距离
 
+/*	printf("procs num : %d\n", omp_get_num_procs());*/
+
 #pragma omp parallel for num_threads(omp_get_num_procs())
 	for (int i = 0; i < n; i++)
 	{
 		int *knn = new int[mk];			// k临近索引
 		float *knd = new float[mk];		// k临近距离
 
-		ztkdt.findKNearestsNTP(pts + i * 3, mk, knn, knd);
+		if (ztkdt.findKNearestsNTP(pts + i * 3, mk, knn, knd))
+		{
+			distances[i] = -1.0;
+			continue;
+		}
 
 		float sum = 0;
 		for (int j = 0; j < mk; j++)
@@ -68,15 +76,21 @@ int ZtStatisticFilterNoisePoint::applyFilter(int n, float *pts, bool *res)
 		delete[] knd;
 	}
 
+	int validCount = 0;
 	double sum = 0, sq_sum = 0;
 	for (int i = 0; i < n; ++i)
 	{
+		if (distances[i] < 0)
+		{
+			continue;
+		}
+		validCount++;
 		sum += distances[i];
 		sq_sum += distances[i] * distances[i];
 	}
 
-	double mean = sum / n;
-	double variance = (sq_sum - sum * sum / n) / (n - 1);
+	double mean = sum / validCount;
+	double variance = (sq_sum - sum * sum / validCount) / (validCount - 1);
 	double stddev = sqrt(variance);
 
 	float distance_threshold = mean + mt * stddev;
@@ -170,9 +184,9 @@ int ZtStatisticFilterNoisePoint::applyFilter_2(int n, float *pts, bool *res)
 	}
 
 	// 二：逐块处理，进行点云滤波
-	for (int i = 0; i < nhb * nvb; i++)
+	for (int i = 0; i < nhb * nvb; i++)/**********************************************/
 	{
-		if (count[i] < 1)
+		if (count[i] < mk)
 		{
 			continue;
 		}
