@@ -408,6 +408,10 @@ namespace zt
 		while (node > -1)
 		{
 			paths[_currentPath++] = node;
+			if (_currentPath > 255)
+			{
+				return 1;
+			}
 
 			node = p[tree[0][node]] <= data[tree[0][node]][node] ? tree[2][node] : tree[3][node];
 		}
@@ -515,6 +519,10 @@ namespace zt
 						while (reNode > -1)
 						{
 							paths[_currentPath++] = reNode;
+							if (_currentPath > 255)
+							{
+								return 1;
+							}
 
 							reNode = p[tree[0][reNode]] <= data[tree[0][reNode]][reNode] ? tree[2][reNode] : tree[3][reNode];
 						}
@@ -528,6 +536,10 @@ namespace zt
 						while (reNode > -1)
 						{
 							paths[_currentPath++] = reNode;
+							if (_currentPath > 255)
+							{
+								return 1;
+							}
 
 							reNode = p[tree[0][reNode]] <= data[tree[0][reNode]][reNode] ? tree[2][reNode] : tree[3][reNode];
 						}

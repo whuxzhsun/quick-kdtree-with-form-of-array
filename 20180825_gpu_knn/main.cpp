@@ -313,8 +313,8 @@ int testGpuKnn()
 
 int testFilter()
 {
-	std::string inFile("D:\\20180828_R1000_sanding\\las\\180828_022843_3.las");
-	std::string outFile("D:\\20180828_R1000_sanding\\test\\180828_022843_3_ft.las");
+	std::string inFile("D:\\20180828_R1000_sanding\\las\\180828_022843_5.las");
+	std::string outFile("D:\\20180828_R1000_sanding\\test\\180828_022843_5_ft.las");
 
 	std::ifstream ifs(inFile, std::ios::in | std::ios::binary);
 	if (!ifs.is_open())
@@ -389,14 +389,9 @@ int testFilter()
 
 			srcPts.push_back(lf3p);
 
-			pts[k * 3 + 0] = float(inPt.GetX() - inHeader.GetOffsetX());
-			pts[k * 3 + 1] = float(inPt.GetY() - inHeader.GetOffsetY());
-			pts[k * 3 + 2] = float(inPt.GetZ() - inHeader.GetOffsetZ());
-		}
-
-		if (j == 0)
-		{
-			continue;
+			pts[k * 3 + 0] = float(inPt[0] - inHeader.GetOffsetX());
+			pts[k * 3 + 1] = float(inPt[1] - inHeader.GetOffsetY());
+			pts[k * 3 + 2] = float(inPt[2] - inHeader.GetOffsetZ());
 		}
 
 		clock_t end = clock();
