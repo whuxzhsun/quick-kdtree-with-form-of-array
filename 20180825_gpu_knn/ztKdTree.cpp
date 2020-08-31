@@ -66,8 +66,8 @@ namespace zt
 
 	int ZtKDTree::setSize(int dimension, unsigned int sz)
 	{
-		nDimension = dimension;	// Êı¾İµÄÎ¬¶È
-		treeSize = sz;			// Êı¾İµÄ×ÜÊı
+		nDimension = dimension;	// æ•°æ®çš„ç»´åº¦
+		treeSize = sz;			// æ•°æ®çš„æ€»æ•°
 
 		if (nDimension > 0 && treeSize > 0)
 		{
@@ -102,10 +102,10 @@ namespace zt
 	}
 
 	/*
-	*	indataÊÇÒ»Î¬Êı×é±íÊ¾¶àÎ¬Êı×é
-	*	Êı¾İÅÅ²¼·½Ê½£º{[x,y,z¡­¡­], [x,y,z¡­¡­], ¡­¡­}
-	*	dataPtrÒ²ÊÇÒ»Î¬Êı×é±íÊ¾¶àÎ¬Êı×é
-	*	Êı¾İÅÅ²¼·½Ê½£º{[x1, x2, x3¡­¡­], [y1, y2, y3¡­¡­], [z1, z2, z3¡­¡­], ¡­¡­}
+	*	indataæ˜¯ä¸€ç»´æ•°ç»„è¡¨ç¤ºå¤šç»´æ•°ç»„
+	*	æ•°æ®æ’å¸ƒæ–¹å¼ï¼š{[x,y,zâ€¦â€¦], [x,y,zâ€¦â€¦], â€¦â€¦}
+	*	dataPträ¹Ÿæ˜¯ä¸€ç»´æ•°ç»„è¡¨ç¤ºå¤šç»´æ•°ç»„
+	*	æ•°æ®æ’å¸ƒæ–¹å¼ï¼š{[x1, x2, x3â€¦â€¦], [y1, y2, y3â€¦â€¦], [z1, z2, z3â€¦â€¦], â€¦â€¦}
 	*/
 	int ZtKDTree::setData(float *indata)
 	{
@@ -144,7 +144,7 @@ namespace zt
 
 		std::random_shuffle(vtr.begin(), vtr.end());
 
-		treeRoot = buildTree(&vtr[0], treeSize, -1);	// ¸ù½ÚµãµÄ¸¸½ÚµãÊÇ-1
+		treeRoot = buildTree(&vtr[0], treeSize, -1);	// æ ¹èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹æ˜¯-1
 
 		return treeRoot;
 	}
@@ -167,10 +167,10 @@ namespace zt
 			int split = chooseSplitDimension(indices, count, key);
 			int idx = chooseMiddleNode(indices, count, split, key);
 
-			// rd ÊÇÊµ¼ÊµãµÄÏÂ±ê£¬ idxÊÇµãµÄË÷ÒıÊı×éµÄÏÂ±ê
+			// rd æ˜¯å®é™…ç‚¹çš„ä¸‹æ ‡ï¼Œ idxæ˜¯ç‚¹çš„ç´¢å¼•æ•°ç»„çš„ä¸‹æ ‡
 			int rd = indices[idx];
 
-			tree[0][rd] = split;	// ·Ö¸îÎ¬¶È
+			tree[0][rd] = split;	// åˆ†å‰²ç»´åº¦
 			tree[1][rd] = parent;
 
 			if (idx > 0)
@@ -209,7 +209,7 @@ namespace zt
 			node = p[tree[0][node]] <= data[tree[0][node]][node] ? tree[2][node] : tree[3][node];
 		}
 
-		// »ØËİÂ·¾¶
+		// å›æº¯è·¯å¾„
 		while (!paths.empty())
 		{
 			node = paths.top();
@@ -223,18 +223,18 @@ namespace zt
 				nearestNode = node;
 			}
 
-			// ×óÓÒ½Úµã¶¼Îª¿Õ£¬ÔòÎªÒ¶×Ó½Úµã
+			// å·¦å³èŠ‚ç‚¹éƒ½ä¸ºç©ºï¼Œåˆ™ä¸ºå¶å­èŠ‚ç‚¹
 			if (tree[2][node] + tree[3][node] == -2)
 			{
 				continue;
 			}
 			else
 			{
-				//$$$$$$$$$$$$$$$$$$   ËÑË÷²ßÂÔ  $$$$$$$$$$$$$$$$$$$$$//
+				//$$$$$$$$$$$$$$$$$$   æœç´¢ç­–ç•¥  $$$$$$$$$$$$$$$$$$$$$//
 				//													  //
-				//  µ±Ç°¼ÓÈëÂ·¾¶µÄ½Úµã¶¼ÊÇÓëËÑË÷µãÔÚÍ¬Ò»¿Õ¼äÖĞµÄ½Úµã  //
-				//	»ØËİÂ·¾¶Ê±£¬Èç¹û¸¸½ÚµãÓëµ±Ç°×î´óËÑË÷°ë¾¶Ïà½»£¬    //
-				//  Ôò±éÀúĞÖµÜ¿Õ¼ä²¢¼ÓÈëÂ·¾¶						  //
+				//  å½“å‰åŠ å…¥è·¯å¾„çš„èŠ‚ç‚¹éƒ½æ˜¯ä¸æœç´¢ç‚¹åœ¨åŒä¸€ç©ºé—´ä¸­çš„èŠ‚ç‚¹  //
+				//	å›æº¯è·¯å¾„æ—¶ï¼Œå¦‚æœçˆ¶èŠ‚ç‚¹ä¸å½“å‰æœ€å¤§æœç´¢åŠå¾„ç›¸äº¤ï¼Œ    //
+				//  åˆ™éå†å…„å¼Ÿç©ºé—´å¹¶åŠ å…¥è·¯å¾„						  //
 				//													  //
 				//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
 
@@ -299,7 +299,7 @@ namespace zt
 		}
 	};
 
-	struct cmp	// ½«×î´óµÄÔªËØ·ÅÔÚ¶ÓÊ×
+	struct cmp	// å°†æœ€å¤§çš„å…ƒç´ æ”¾åœ¨é˜Ÿé¦–
 	{
 		bool operator()(NearestNode a, NearestNode b)
 		{
@@ -312,7 +312,7 @@ namespace zt
 		std::priority_queue<NearestNode, std::vector<NearestNode>, cmp> kNeighbors;
 		std::stack<int> paths;
 		
-		// ¼ÇÂ¼²éÕÒÂ·¾¶
+		// è®°å½•æŸ¥æ‰¾è·¯å¾„
 		int node = treeRoot;
 		while (node > -1)
 		{
@@ -321,10 +321,10 @@ namespace zt
 			node = p[tree[0][node]] <= data[tree[0][node]][node] ? tree[2][node] : tree[3][node];
 		}
 
-		// Ô¤ÏÈ¼ÓÈëÒ»¸ö¼«´ó½Úµã
+		// é¢„å…ˆåŠ å…¥ä¸€ä¸ªæå¤§èŠ‚ç‚¹
 		kNeighbors.emplace(-1, 9999999);
 
-		// »ØËİÂ·¾¶
+		// å›æº¯è·¯å¾„
 		float distance = 0;
 		while (!paths.empty()) 
 		{
@@ -394,16 +394,16 @@ namespace zt
 
 	int ZtKDTree::findKNearestsNTP(float *p, int k, int *res, float *dit)
 	{
-		// Êı×éĞÎÊ½µÄ×î´ó¶Ñ
+		// æ•°ç»„å½¢å¼çš„æœ€å¤§å †
 		int *kNeighbors = new int[k];
 		float *kNDistance = new float[k];
 		int _currentNNode = 0;
 
-		// Êı×éĞÎÊ½µÄÂ·¾¶¶ÑÕ»
+		// æ•°ç»„å½¢å¼çš„è·¯å¾„å †æ ˆ
 		int paths[256];
 		int _currentPath = 0;
 
-		// ¼ÇÂ¼²éÕÒÂ·¾¶
+		// è®°å½•æŸ¥æ‰¾è·¯å¾„
 		int node = treeRoot;
 		while (node > -1)
 		{
@@ -419,7 +419,7 @@ namespace zt
 		kNeighbors[_currentNNode] = -1;
 		kNDistance[_currentNNode++] = 9999999;
 
-		// »ØËİÂ·¾¶
+		// å›æº¯è·¯å¾„
 		float distance = 0;
 		while (_currentPath > 0)
 		{
@@ -436,7 +436,7 @@ namespace zt
 				kNeighbors[_currentNNode] = node;
 				kNDistance[_currentNNode++] = distance;
 
-				// µ±´ïµ½k¸ö½Úµãºó£¬½¨Á¢×î´ó¶Ñ
+				// å½“è¾¾åˆ°kä¸ªèŠ‚ç‚¹åï¼Œå»ºç«‹æœ€å¤§å †
 				if (_currentNNode == k)
 				{
 					for (int i = _currentNNode / 2 - 1; i >= 0; i--)
@@ -448,7 +448,7 @@ namespace zt
 							if (son + 1 < _currentNNode && kNDistance[son] < kNDistance[son + 1])
 								son++;
 
-							if (kNDistance[parent] < kNDistance[son])  // Èç¹û¸¸½ÚµãĞ¡ÓÚ×Ó½Úµã£¬Ôò½»»»
+							if (kNDistance[parent] < kNDistance[son])  // å¦‚æœçˆ¶èŠ‚ç‚¹å°äºå­èŠ‚ç‚¹ï¼Œåˆ™äº¤æ¢
 							{
 								float tempD = kNDistance[parent];
 								int tempI = kNeighbors[parent];
@@ -471,7 +471,7 @@ namespace zt
 					kNeighbors[0] = kNeighbors[_currentNNode - 1];
 					kNDistance[0] = kNDistance[_currentNNode - 1];
 
-					// É¾³ı¶Ñ¶¥ºó£¬ÒªÖØ¹¹×î´ó¶Ñ
+					// åˆ é™¤å †é¡¶åï¼Œè¦é‡æ„æœ€å¤§å †
 					int parent = 0;
 					int son = parent * 2 + 1;
 					for (; son < _currentNNode - 1; son = son * 2 + 1)
@@ -479,7 +479,7 @@ namespace zt
 						if (son + 1 < _currentNNode - 1 && kNDistance[son] < kNDistance[son + 1])
 							son++;
 
-						if (kNDistance[parent] < kNDistance[son])  // Èç¹û¸¸½ÚµãĞ¡ÓÚ×Ó½Úµã£¬Ôò½»»»
+						if (kNDistance[parent] < kNDistance[son])  // å¦‚æœçˆ¶èŠ‚ç‚¹å°äºå­èŠ‚ç‚¹ï¼Œåˆ™äº¤æ¢
 						{
 							float tempD = kNDistance[parent];
 							int tempI = kNeighbors[parent];
@@ -548,7 +548,7 @@ namespace zt
 			}
 		}
 
-		// ½øĞĞ¶ÑÅÅĞò
+		// è¿›è¡Œå †æ’åº
 		for (int i = _currentNNode - 1; i > 0; i--)
 		{
 			int tempI = kNeighbors[0];
@@ -627,7 +627,7 @@ namespace zt
 		std::queue<NearestNode> kNeighbors;
 		std::stack<int> paths;
 
-		// ¼ÇÂ¼²éÕÒÂ·¾¶
+		// è®°å½•æŸ¥æ‰¾è·¯å¾„
 		int node = treeRoot;
 		while (node > -1)
 		{
@@ -636,7 +636,7 @@ namespace zt
 			node = p[tree[0][node]] <= data[tree[0][node]][node] ? tree[2][node] : tree[3][node];
 		}
 
-		// »ØËİÂ·¾¶
+		// å›æº¯è·¯å¾„
 		float distance = 0;
 		while (!paths.empty())
 		{
@@ -755,7 +755,7 @@ namespace zt
 	}
 //*/
 	/*	
-	*	½¨Ê÷¹¦ÄÜº¯Êı
+	*	å»ºæ ‘åŠŸèƒ½å‡½æ•°
 	*/
 	int ZtKDTree::chooseSplitDimension(int *ids, int sz, float &key)
 	{
@@ -804,10 +804,10 @@ namespace zt
 
 		while (1)
 		{
-			while (left <= right && data[dim][ids[left]] <= key)	//×ó±ßÕÒ±Èkey´óµÄÖµ
+			while (left <= right && data[dim][ids[left]] <= key)	//å·¦è¾¹æ‰¾æ¯”keyå¤§çš„å€¼
 				++left;
 
-			while (left <= right && data[dim][ids[right]] >= key)	//ÓÒ±ßÕÒ±ÈkeyĞ¡µÄÖµ
+			while (left <= right && data[dim][ids[right]] >= key)	//å³è¾¹æ‰¾æ¯”keyå°çš„å€¼
 				--right; 
 
 			if (left > right)
@@ -823,10 +823,10 @@ namespace zt
 // 		right = sz - 1;
 // 		while (1)
 // 		{
-// 			while (left <= right && data[dim][ids[left]] <= key)	//×ó±ßÕÒ±Èkey´óµÄÖµ
+// 			while (left <= right && data[dim][ids[left]] <= key)	//å·¦è¾¹æ‰¾æ¯”keyå¤§çš„å€¼
 // 				++left;
 // 
-// 			while (left <= right && data[dim][ids[right]] > key)	//ÓÒ±ßÕÒ±ÈkeyĞ¡µÄÖµ
+// 			while (left <= right && data[dim][ids[right]] > key)	//å³è¾¹æ‰¾æ¯”keyå°çš„å€¼
 // 				--right;
 // 
 // 			if (left > right)
@@ -851,7 +851,7 @@ namespace zt
 //
 //		index = left;
 
-		// ÕÒ³ö×ó×ÓÊ÷µÄ×î´óÖµ×÷Îª¸ù½Úµã
+		// æ‰¾å‡ºå·¦å­æ ‘çš„æœ€å¤§å€¼ä½œä¸ºæ ¹èŠ‚ç‚¹
 		float max = -9999999;
 		int maxIndex = 0;
 		for (int i = 0; i < left; i++)
@@ -863,12 +863,15 @@ namespace zt
 			}
 		}
 
-		if (maxIndex != left - 1)
+		if (left - 1 >= 0 && maxIndex != 0)
 		{
-			std::swap(ids[maxIndex], ids[left - 1]);
+			if (maxIndex != left - 1)
+			{
+				std::swap(ids[maxIndex], ids[left - 1]);
+			}
 		}
 
-		return left - 1;
+		return left - 1 > 0 ? left - 1 : 0;
 	}
 
 	float ZtKDTree::computeDistance(float *p, int n)
