@@ -863,7 +863,7 @@ namespace zt
 			}
 		}
 
-		if (left - 1 >= 0 && maxIndex != 0)
+		if (left > 0)
 		{
 			if (maxIndex != left - 1)
 			{
